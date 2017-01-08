@@ -362,7 +362,7 @@ class BorutaPy(BaseEstimator, TransformerMixin):
             X = X[:, self.support_]
 
         if X.shape[1] == 0:
-            X = np.zeros(X.shape[0], 1)
+            X = np.zeros((X.shape[0], 1))
         return X
 
     def _get_tree_num(self, n_feat):
