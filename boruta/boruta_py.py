@@ -11,6 +11,7 @@ License: BSD 3 clause
 from __future__ import print_function, division
 import numpy as np
 import scipy as sp
+import pandas as pd
 from sklearn.utils import check_random_state, check_X_y
 from sklearn.base import TransformerMixin, BaseEstimator
 
@@ -357,9 +358,15 @@ class BorutaPy(BaseEstimator, TransformerMixin):
             raise ValueError('You need to call the fit(X, y) method first.')
 
         if weak:
-            X = X[:, self.support_ + self.support_weak_]
+            if isinstance(X, pd.DataFrame):
+                X = X.iloc[:, self.support_ + self.support_weak_]
+            else:
+                X = X[:, self.support_ + self.support_weak_]
         else:
-            X = X[:, self.support_]
+            if isinstance(X, pd.DataFrame):
+                X = X.iloc[:, self.support_]
+            else:
+                X = X[:, self.support_]
 
         if X.shape[1] == 0:
             X = np.zeros((X.shape[0], 1))
@@ -396,7 +403,10 @@ class BorutaPy(BaseEstimator, TransformerMixin):
     def _add_shadows_get_imps(self, X, y, dec_reg):
         # find features that are tentative still
         x_cur_ind = np.where(dec_reg >= 0)[0]
-        x_cur = np.copy(X[:, x_cur_ind])
+        if isinstance(X, pd.DataFrame):
+            x_cur = np.copy(X.iloc[:, x_cur_ind])
+        else:
+            x_cur = np.copy(X[:, x_cur_ind])
         x_cur_w = x_cur.shape[1]
         # deep copy the matrix for the shadow matrix
         x_sha = np.copy(x_cur)
